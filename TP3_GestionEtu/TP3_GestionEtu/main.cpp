@@ -13,6 +13,5 @@ int main(int argc, char *argv[])
     TP3_GestionEtu w;
     w.show();
 
-
     return a.exec();
 }
