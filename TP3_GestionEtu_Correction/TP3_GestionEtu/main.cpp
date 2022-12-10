@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     // Create Promotion
-    Promotion* promo = new Promotion( QDir::currentPath()+"/../../data/promoDUT.csv");
+    Promotion* promo = new Promotion( QDir::currentPath()+"/../data/promoDUT.csv");
 
     // Create Interface
     TP3_GestionEtu w(promo);
