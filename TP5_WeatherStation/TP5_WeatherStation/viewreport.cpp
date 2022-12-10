@@ -1,6 +1,5 @@
 #include "viewreport.h"
 #include "dbmanager.h"
-#include "controllers.h"
 
 ViewReport::ViewReport(WeatherReport *wreport, Ui::TP5_WeatherStationClass *ui)
     : model(wreport), ui(ui)
@@ -21,17 +20,5 @@ void ViewReport::init()
 
 void ViewReport::update()
 {
-    ui->lineEdit_temp->setText( QString::number(model->getTemp()));
-    ui->lineEdit_temp_min->setText( QString::number(model->getTempMin()));
-    ui->lineEdit_temp_max->setText( QString::number(model->getTempMax()));
-    ui->lineEdit_lon->setText( QString::number(model->getLon()));
-    ui->lineEdit_lat->setText( QString::number(model->getLat()));
-    ui->lineEdit_description->setText( model->getDescription());
-}
 
-//void ViewReport::request()
-//{
-//    // Call the controller
-//    Controller_WeatherRequest control(model);
-//    control.control();
-//}
+}
