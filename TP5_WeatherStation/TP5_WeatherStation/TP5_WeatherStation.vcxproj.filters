@@ -21,6 +21,12 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{dc75b38f-f7f9-474d-8b8e-5724c306c712}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="View">
+      <UniqueIdentifier>{5fbe82ea-dfe7-406f-87bb-054d73ffcd4d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="TP5_WeatherStation.qrc">
@@ -41,35 +47,35 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dbmanager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="viewpollution.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>View</Filter>
     </ClCompile>
     <ClCompile Include="viewreport.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>View</Filter>
     </ClCompile>
     <ClCompile Include="weatherreport.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="weatherreport.h">
+      <Filter>Model</Filter>
+    </ClInclude>
     <ClInclude Include="dbmanager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Model</Filter>
     </ClInclude>
     <ClInclude Include="observer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="weatherreport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="viewreport.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="viewpollution.h">
-      <Filter>Header Files</Filter>
+      <Filter>View</Filter>
+    </QtMoc>
+    <QtMoc Include="viewreport.h">
+      <Filter>View</Filter>
     </QtMoc>
   </ItemGroup>
 </Project>
