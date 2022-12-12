@@ -1,4 +1,5 @@
 //#include <unistd.h>
+#include <iostream>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QByteArray>
 
@@ -12,6 +13,7 @@
 #include "ui_TP5_WeatherStation.h"
 
 #include "weatherreport.h"
+using namespace std;
 
 TP5_WeatherStation::TP5_WeatherStation(DbManager *dbm, QWidget* parent)
     : QMainWindow(parent)
@@ -21,6 +23,7 @@ TP5_WeatherStation::TP5_WeatherStation(DbManager *dbm, QWidget* parent)
     , netmanager (nullptr)              // NetWork Manager, for http requests
 {
     ui->setupUi(this);
+    
 
     // Weather report View
     reportView = new ViewReport(weatherReport,ui);
@@ -30,7 +33,9 @@ TP5_WeatherStation::TP5_WeatherStation(DbManager *dbm, QWidget* parent)
     // netmanager here (or better in initialisation list)  + callback to replyFinished
     netmanager = new QNetworkAccessManager(this);
 
-    weatherRequest();
+    weatherRequest(); 
+    connect(netmanager, SIGNAL(finished(QNetworkReply*)),
+        this, SLOT(weatherReplyFinished(QNetworkReply*)));
     // uncomment once observable implemented
 //    connect(ui->pushButton_weather_request, &QPushButton::pressed, this, &TP5_WeatherStation::weatherRequest);
 //    connect(ui->pushButton_weather_request, &QPushButton::pressed, this, &TP5_WeatherStation::pollutionRequest);
@@ -65,6 +70,22 @@ void TP5_WeatherStation::weatherReplyFinished(QNetworkReply* reply)
     QJsonDocument jsonResponse = QJsonDocument::fromJson(datas);
     QJsonObject jsonObj = jsonResponse.object();
     QString infos(datas);
-    //...
+    
+    if (reply->error() != QNetworkReply::NoError)
+    {
+        //Network Error
+        qDebug() << reply->error() << "=>" << reply->errorString();
+    }
+    else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() ==
+        200)
+    {
+        QJsonObject mainObj = jsonObj["main"].toObject();
+        auto temp = mainObj["temp"].toDouble();
+        
+    }
+    else {
+        cout << "Failed to connect to API !" << endl;
+    }
+
     reply->deleteLater();
 }
