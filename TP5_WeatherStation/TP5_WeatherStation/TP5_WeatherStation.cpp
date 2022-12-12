@@ -15,6 +15,13 @@
 #include "weatherreport.h"
 using namespace std;
 
+
+struct ReportAll {
+    qint64 time;
+    int aqi;
+};
+
+
 TP5_WeatherStation::TP5_WeatherStation(DbManager *dbm, QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::TP5_WeatherStationClass)
@@ -160,6 +167,7 @@ void TP5_WeatherStation::pollutionReplyFinished(QNetworkReply* reply)
 
             for (int i = 0; i < listArray.size(); i++)
             {
+                /*
                 QJsonArray numberArray = listArray[i].toArray();
                 QJsonObject numberArrayTime = listArray[2].toObject();
 
@@ -169,8 +177,13 @@ void TP5_WeatherStation::pollutionReplyFinished(QNetworkReply* reply)
 
                 QJsonObject mainArray = numberArray[0].toObject();
                 int aqi = mainArray["aqi"].toInt();
+                */
+                ReportAll rp;
+               
+                rp.time = QDateTime::fromSecsSinceEpoch(jsonObj["list"].toArray()[i].toObject().value("dt").toInt()).toMSecsSinceEpoch();
+                rp.aqi = jsonObj["list"].toArray()[i].toObject().value("main").toObject().value("aqi").toInt();
 
-                dbmanager->addData(localtimeInt, aqi);
+                dbmanager->addData(rp.time, rp.aqi);
             }
             dbmanager->printAllData();
         }
