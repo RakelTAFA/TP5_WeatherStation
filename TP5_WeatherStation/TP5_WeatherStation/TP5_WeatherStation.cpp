@@ -18,6 +18,7 @@ TP5_WeatherStation::TP5_WeatherStation(DbManager *dbm, QWidget* parent)
     , ui(new Ui::TP5_WeatherStationClass)
     , weatherReport (new WeatherReport) // Weather Data class
     , dbmanager (dbm)                   // DB Manager, for Pollution Data
+    , netmanager (nullptr)              // NetWork Manager, for http requests
 {
     ui->setupUi(this);
 
@@ -26,8 +27,10 @@ TP5_WeatherStation::TP5_WeatherStation(DbManager *dbm, QWidget* parent)
     // Pollution Forecast View
     pollutionView = new ViewPollution(dbmanager, ui->groupBox_pollution);
 
-    // comment following line and uncomment next one, once observable implemented
+    // netmanager here (or better in initialisation list)  + callback to replyFinished
+
     weatherRequest();
+    // uncomment once observable implemented
 //    connect(ui->pushButton_weather_request, &QPushButton::pressed, this, &TP5_WeatherStation::weatherRequest);
 //    connect(ui->pushButton_weather_request, &QPushButton::pressed, this, &TP5_WeatherStation::pollutionRequest);
 
@@ -37,11 +40,13 @@ TP5_WeatherStation::~TP5_WeatherStation()
 {
     delete ui;
     delete dbmanager;
+    if (netmanager != nullptr)
+        netmanager->deleteLater();
 }
 
 void TP5_WeatherStation::weatherRequest() {
 
-    // your netmanager and request here
+    // your request here
 
 }
 
@@ -51,5 +56,4 @@ void TP5_WeatherStation::weatherReplyFinished(QNetworkReply* reply)
 
     //don't forget to delete when no more requested
     reply->deleteLater();
-    netmanager->deleteLater();
 }
