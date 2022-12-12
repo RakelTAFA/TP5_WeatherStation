@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     {   // Creates a table if it doesn't exist.
         // Otherwise, use existing table.
         dbm->createTable();
-        dbm->addData(1670310413,5); // (dt, aqi)
+        dbm->addData(1670310413,5); // (dt in seconds, aqi)
         dbm->addData(1670346054,3);
         dbm->addData(1670382413,1);
         dbm->printAllData();
