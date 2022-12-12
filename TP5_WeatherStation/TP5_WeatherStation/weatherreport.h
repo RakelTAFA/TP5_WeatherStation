@@ -48,6 +48,7 @@ public:
         temp_max = _temp_max;
         lon = _lon;
         lat = _lat;
+        notifyObserver();
     }
 };
 

@@ -22,19 +22,20 @@ TP5_WeatherStation::TP5_WeatherStation(DbManager *dbm, QWidget* parent)
     , dbmanager (dbm)                   // DB Manager, for Pollution Data
     , netmanager (nullptr)              // NetWork Manager, for http requests
 {
-    
-
-
     ui->setupUi(this);
     
-
     // Weather report View
     reportView = new ViewReport(weatherReport,ui);
+
     // Pollution Forecast View
     pollutionView = new ViewPollution(dbmanager, ui->groupBox_pollution);
 
+    weatherReport->addObserver(reportView);
+    weatherReport->addObserver(pollutionView);
+
     // netmanager here (or better in initialisation list)  + callback to replyFinished
     netmanager = new QNetworkAccessManager(this);
+    pollutionManager = new QNetworkAccessManager(this);
 
     weatherRequest(); 
     connect(netmanager, SIGNAL(finished(QNetworkReply*)),
@@ -112,6 +113,72 @@ void TP5_WeatherStation::weatherReplyFinished(QNetworkReply* reply)
         lat = coordObj["lon"].toDouble();
 
         weatherReport->fetchData(main, description, temp, temp_min, temp_max, lon, lat);
+    }
+    else {
+        cout << "Failed to connect to API !" << endl;
+    }
+
+    reply->deleteLater();
+}
+
+
+void TP5_WeatherStation::pollutionRequest()
+{
+    QString URL = "https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=46.0398&lon=5.4133&units=metric&lang=fr&appid=0d41ac5cb088db1d5301807cbfb18170";
+    QUrl url(URL);
+    QNetworkRequest* request = new QNetworkRequest(url);
+    request->setUrl(url);
+
+    //--header ’Accept: application/json’
+    request->setRawHeader("Accept", "application/json");
+    qDebug() << Q_FUNC_INFO << request->url();
+    pollutionManager->get(*request);
+}
+
+
+void TP5_WeatherStation::pollutionReplyFinished(QNetworkReply* reply)
+{
+    QByteArray datas = reply->readAll();
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(datas);
+    QJsonObject jsonObj = jsonResponse.object();
+    QString infos(datas);
+
+    if (reply->error() != QNetworkReply::NoError)
+    {
+        //Network Error
+        qDebug() << reply->error() << "=>" << reply->errorString();
+    }
+    else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200)
+    {
+        QJsonArray weatherArray = jsonObj["weather"].toArray();
+        QJsonObject weatherArrayZero = weatherArray[0].toObject();
+        QString main, description;
+        main = weatherArrayZero["main"].toString();
+        description = weatherArrayZero["description"].toString();
+
+        QJsonObject mainObj = jsonObj["main"].toObject();
+        double temp, temp_min, temp_max, lon, lat;
+        temp = mainObj["temp"].toDouble();
+        temp_min = mainObj["temp_min"].toDouble();
+        temp_max = mainObj["temp_max"].toDouble();
+
+        
+        QJsonArray listArray = jsonObj["list"].toArray();
+        
+        unsigned long int time;
+        int aqi;
+
+        for (int i = 0; i < listArray.size(); i++)
+        {
+            QJsonArray numberArray = listArray[i].toArray();
+            QJsonObject numberArrayTime = listArray[2].toObject();
+            time = numberArrayTime["dt"].toInt();
+
+            QJsonObject mainArray = numberArray[0].toObject();
+            aqi = mainArray["aqi"].toInt();
+
+        }
+
     }
     else {
         cout << "Failed to connect to API !" << endl;

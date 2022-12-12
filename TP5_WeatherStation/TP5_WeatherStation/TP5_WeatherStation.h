@@ -35,6 +35,7 @@ private:
     WeatherReport* weatherReport;
     DbManager* dbmanager;
     QNetworkAccessManager* netmanager;
+    QNetworkAccessManager* pollutionManager;
 
     ViewReport *reportView;
     ViewPollution *pollutionView;
@@ -42,4 +43,6 @@ private:
 public slots:
     void weatherRequest();
     void weatherReplyFinished(QNetworkReply* reply);
+    void pollutionRequest();
+    void pollutionReplyFinished(QNetworkReply* reply);
 };
