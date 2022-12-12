@@ -76,12 +76,15 @@ void TP5_WeatherStation::weatherReplyFinished(QNetworkReply* reply)
         //Network Error
         qDebug() << reply->error() << "=>" << reply->errorString();
     }
-    else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() ==
-        200)
+    else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200)
     {
         QJsonObject mainObj = jsonObj["main"].toObject();
-        auto temp = mainObj["temp"].toDouble();
+        float temp = mainObj["temp"].toDouble();
         
+        QJsonArray weatherArray = jsonObj["weather"].toArray();
+        QJsonObject weatherArrayZero = weatherArray[0].toObject();
+        QString id = weatherArrayZero["main"].toString();
+        cout << id.toStdString() << endl;
     }
     else {
         cout << "Failed to connect to API !" << endl;
