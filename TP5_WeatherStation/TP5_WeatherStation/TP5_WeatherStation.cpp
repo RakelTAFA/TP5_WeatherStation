@@ -178,6 +178,7 @@ void TP5_WeatherStation::pollutionReplyFinished(QNetworkReply* reply)
                 QJsonObject mainArray = numberArray[0].toObject();
                 int aqi = mainArray["aqi"].toInt();
                 */
+
                 ReportAll rp;
                
                 rp.time = QDateTime::fromSecsSinceEpoch(jsonObj["list"].toArray()[i].toObject().value("dt").toInt()).toMSecsSinceEpoch();
