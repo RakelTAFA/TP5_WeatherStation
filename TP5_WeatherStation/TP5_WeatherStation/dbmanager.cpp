@@ -16,6 +16,17 @@ DbManager::DbManager(const QString &path)
     else
     {
         qDebug() << "Database: connection ok";
+        QSqlQuery query;
+        query.exec("DROP TABLE IF EXISTS pollution;");
+        query.prepare("CREATE TABLE pollution(id INTEGER PRIMARY KEY, dt INTEGER, aqi INTEGER); ");
+
+        if (!query.exec())
+        {
+            qDebug() << "Error: Requete creation de table non effectuee...";
+        }
+        else {
+            qDebug() << "Table pollution creer !";
+        }
     }
 }
 
@@ -37,6 +48,7 @@ bool DbManager::createTable()
     bool success = false;
 
     QSqlQuery query;
+    query.exec("DROP TABLE IF EXISTS pollution;");
     query.prepare("CREATE TABLE pollution(id INTEGER PRIMARY KEY, dt INTEGER, aqi INTEGER);");
 
     if (!query.exec())

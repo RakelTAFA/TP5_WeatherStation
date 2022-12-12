@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
     if (dbm->isOpen())
     {   // Creates a table if it doesn't exist.
         // Otherwise, use existing table.
+        /*
         dbm->createTable();
         dbm->addData(1670310413,5); // (dt in seconds, aqi)
         dbm->addData(1670346054,3);
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
         dbm->printAllData();
         dbm->removeAllData();
         qDebug() << "End";
+        */
     }
     else
     {

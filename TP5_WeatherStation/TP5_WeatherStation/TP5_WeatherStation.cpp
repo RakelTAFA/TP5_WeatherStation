@@ -40,9 +40,11 @@ TP5_WeatherStation::TP5_WeatherStation(DbManager *dbm, QWidget* parent)
     weatherRequest(); 
     connect(netmanager, SIGNAL(finished(QNetworkReply*)),
         this, SLOT(weatherReplyFinished(QNetworkReply*)));
+    connect(pollutionManager, SIGNAL(finished(QNetworkReply*)),
+        this, SLOT(pollutionReplyFinished(QNetworkReply*)));
     // uncomment once observable implemented
     connect(ui->pushButton_weather_request, &QPushButton::pressed, this, &TP5_WeatherStation::weatherRequest);
-//    connect(ui->pushButton_weather_request, &QPushButton::pressed, this, &TP5_WeatherStation::pollutionRequest);
+    connect(ui->pushButton_weather_request, &QPushButton::pressed, this, &TP5_WeatherStation::pollutionRequest);
 
 }
 
@@ -53,6 +55,8 @@ TP5_WeatherStation::~TP5_WeatherStation()
     delete dbmanager;
     if (netmanager != nullptr)
         netmanager->deleteLater();
+    if (pollutionManager != nullptr)
+        pollutionManager->deleteLater();
 }
 
 
@@ -150,39 +154,36 @@ void TP5_WeatherStation::pollutionReplyFinished(QNetworkReply* reply)
     }
     else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200)
     {
-        QJsonArray weatherArray = jsonObj["weather"].toArray();
-        QJsonObject weatherArrayZero = weatherArray[0].toObject();
-        QString main, description;
-        main = weatherArrayZero["main"].toString();
-        description = weatherArrayZero["description"].toString();
-
-        QJsonObject mainObj = jsonObj["main"].toObject();
-        double temp, temp_min, temp_max, lon, lat;
-        temp = mainObj["temp"].toDouble();
-        temp_min = mainObj["temp_min"].toDouble();
-        temp_max = mainObj["temp_max"].toDouble();
-
-        
-        QJsonArray listArray = jsonObj["list"].toArray();
-        
-        unsigned long int time;
-        int aqi;
-
-        for (int i = 0; i < listArray.size(); i++)
+        if (dbmanager->isOpen())
         {
-            QJsonArray numberArray = listArray[i].toArray();
-            QJsonObject numberArrayTime = listArray[2].toObject();
-            time = numberArrayTime["dt"].toInt();
+            QJsonArray listArray = jsonObj["list"].toArray();
 
-            QJsonObject mainArray = numberArray[0].toObject();
-            aqi = mainArray["aqi"].toInt();
+            for (int i = 0; i < listArray.size(); i++)
+            {
+                QJsonArray numberArray = listArray[i].toArray();
+                QJsonObject numberArrayTime = listArray[2].toObject();
 
+                int localtimeInt = numberArrayTime["dt"].toInt();
+                QDateTime localtime = QDateTime::fromSecsSinceEpoch(localtimeInt);
+                qint64 msdt = localtime.toMSecsSinceEpoch();
+
+                QJsonObject mainArray = numberArray[0].toObject();
+                int aqi = mainArray["aqi"].toInt();
+
+                dbmanager->addData(localtimeInt, aqi);
+            }
+            dbmanager->printAllData();
         }
+        else 
+        {
+            qDebug() << "Pas entrer dans la boucle...";
+        }
+        
 
     }
     else {
         cout << "Failed to connect to API !" << endl;
     }
-
+    
     reply->deleteLater();
 }
