@@ -22,6 +22,9 @@ TP5_WeatherStation::TP5_WeatherStation(DbManager *dbm, QWidget* parent)
     , dbmanager (dbm)                   // DB Manager, for Pollution Data
     , netmanager (nullptr)              // NetWork Manager, for http requests
 {
+    
+
+
     ui->setupUi(this);
     
 
@@ -37,10 +40,11 @@ TP5_WeatherStation::TP5_WeatherStation(DbManager *dbm, QWidget* parent)
     connect(netmanager, SIGNAL(finished(QNetworkReply*)),
         this, SLOT(weatherReplyFinished(QNetworkReply*)));
     // uncomment once observable implemented
-//    connect(ui->pushButton_weather_request, &QPushButton::pressed, this, &TP5_WeatherStation::weatherRequest);
+    connect(ui->pushButton_weather_request, &QPushButton::pressed, this, &TP5_WeatherStation::weatherRequest);
 //    connect(ui->pushButton_weather_request, &QPushButton::pressed, this, &TP5_WeatherStation::pollutionRequest);
 
 }
+
 
 TP5_WeatherStation::~TP5_WeatherStation()
 {
@@ -49,6 +53,7 @@ TP5_WeatherStation::~TP5_WeatherStation()
     if (netmanager != nullptr)
         netmanager->deleteLater();
 }
+
 
 void TP5_WeatherStation::weatherRequest() {
 
@@ -64,6 +69,7 @@ void TP5_WeatherStation::weatherRequest() {
     netmanager->get(*request);
 }
 
+
 void TP5_WeatherStation::weatherReplyFinished(QNetworkReply* reply)
 {
     QByteArray datas = reply->readAll();
@@ -78,6 +84,8 @@ void TP5_WeatherStation::weatherReplyFinished(QNetworkReply* reply)
     }
     else if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200)
     {
+        // Partie test
+        /*
         QJsonObject mainObj = jsonObj["main"].toObject();
         float temp = mainObj["temp"].toDouble();
         
@@ -85,6 +93,25 @@ void TP5_WeatherStation::weatherReplyFinished(QNetworkReply* reply)
         QJsonObject weatherArrayZero = weatherArray[0].toObject();
         QString id = weatherArrayZero["main"].toString();
         cout << id.toStdString() << endl;
+        */
+
+        QJsonArray weatherArray = jsonObj["weather"].toArray();
+        QJsonObject weatherArrayZero = weatherArray[0].toObject();
+        QString main, description;
+        main = weatherArrayZero["main"].toString();
+        description = weatherArrayZero["description"].toString();
+
+        QJsonObject mainObj = jsonObj["main"].toObject();
+        double temp, temp_min, temp_max, lon, lat;
+        temp = mainObj["temp"].toDouble();
+        temp_min = mainObj["temp_min"].toDouble();
+        temp_max = mainObj["temp_max"].toDouble();
+
+        QJsonObject coordObj = jsonObj["coord"].toObject();
+        lon = coordObj["lin"].toDouble();
+        lat = coordObj["lon"].toDouble();
+
+        weatherReport->fetchData(main, description, temp, temp_min, temp_max, lon, lat);
     }
     else {
         cout << "Failed to connect to API !" << endl;
