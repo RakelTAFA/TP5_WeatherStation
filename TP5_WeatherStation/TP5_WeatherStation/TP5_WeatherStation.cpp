@@ -186,7 +186,7 @@ void TP5_WeatherStation::pollutionReplyFinished(QNetworkReply* reply)
 
                 dbmanager->addData(rp.time, rp.aqi);
             }
-            dbmanager->printAllData();
+            //dbmanager->printAllData();
         }
         else 
         {
